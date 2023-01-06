@@ -5,9 +5,28 @@ const connection = dbconfig.getConnection();
 
 //Medicine CRUD Operations
 
-// 1. Get All Medicine details
-router.get('/', (req, res, next) => {
-    connection.query("SELECT * FROM Medicine_Master", (err, results, fields) => {
+//Prescription CRUD Operations 
+//Get Prrescription Details by Patient Id
+router.get('/getPrescriptionDetailById/:id', (req, res, next) => {
+    const Patient_Id = req.params.id;
+  
+    connection.query("SELECT p.prescription_id,p.Patient_Id,p.medicine_id,p.medicine_type,p.no_of_days,p.quantity,p.befre_or_aftr_food,p.morning,p.afternoon,p.evening,m.medicine_name from Prescription_Details p, Medicine_Master m Where p.medicine_id=m.medicine_id and Patient_Id= ?",Patient_Id,(err, results, fields) => {
+        if (err) {
+            res.sendStatus(500);
+            return;
+        }
+        else if (results == 0) {
+            res.json({ "Data": "Data Not Found", "Status": "false" })
+        }
+        else {
+            res.json({ "Data": results, "Status": "true" })
+        }
+
+    });
+})
+//single dataset from prescription details
+router.get('/getsinglePrescriptionById/:id', (req, res, next) => {
+    connection.query("select p.prescription_id,p.Patient_Id,p.medicine_id,p.medicine_type,p.no_of_days,p.quantity,p.befre_or_aftr_food,p.morning,p.afternoon,p.evening,m.medicine_name from Prescription_Details p, Medicine_Master m Where Patient_Id= ? and p.medicine_id=m.medicine_id", (err, results, fields) => {
         if (err) {
             res.sendStatus(500);
             return;
@@ -17,47 +36,13 @@ router.get('/', (req, res, next) => {
         }
         else {
             res.json({ "Data": results, "Status": "true" })
-        }
-
-    });
-})
-router.get('/medicinename', (req, res, next) => {
-    connection.query("SELECT medicine_id,medicine_name,mrp_rate,ptr_rate,expiry_date,medicine_type,hsn_code,qty,in_stock_total from Medicine_Master", (err, results, fields) => {
-        if (err) {
-            res.sendStatus(500);
-            return;
-        }
-        else if (results == 0) {
-            res.json({ "Data": results, "Status": "false" })
-        }
-        else {
-            res.json({ "Data": results, "Status": "true" })
-        }
-
-    });
-})
-
-//Sarrch Medcne by name
-router.get('/search', async (req, res, next) => {
-    const medicine_name = req.query.name;
-    let sql = `CALL MedicineSearch(?)`;
-    connection.query(sql, [medicine_name], (err, results) => {
-        if (err) {
-            res.sendStatus(500);
-            return;
-        }
-        else if (results == 0) {
-            res.json({ "Data": "Data not Found", "Status": "false" })
-        }
-        else {
-            res.json({ "Data": results[0], "Status": "true" })
         }
 
     });
 })
 
 // get medicine name by Id
-router.get('/:id', async (req, res, next) => {
+/*router.get('/:id', async (req, res, next) => {
     const medicine_id = req.params.id;
     let sql = "SELECT * FROM Medicine_Master where medicine_id = (?)";
     connection.query(sql, [medicine_id], (err, results) => {
@@ -72,12 +57,25 @@ router.get('/:id', async (req, res, next) => {
             res.json({ "Data": results[0], "Status": "true" });
         }
     });
-});
+});*/
 
 //3.Add Doctors details
-router.post('/create', async (req, res) => {
+router.post('/addprescriptionPrimary', async (req, res) => {
     const data = req.body;
-    connection.query('INSERT INTO Medicine_Master SET ?', data, (err, results) => {
+    connection.query('INSERT INTO Prescription_Primary SET ?', data, (err, results) => {
+        if (err) {
+            res.sendStatus(500);
+            return;
+        }
+        else {
+            res.json({ "Data": "Record " + results.insertId + " Inserted", "Status": "true" });
+        }
+    })
+
+});
+router.post('/addprescriptionSecondary', async (req, res) => {
+    const data = req.body;
+    connection.query('INSERT INTO Prescription_Details SET ?', data, (err, results) => {
         if (err) {
             res.sendStatus(500);
             return;
@@ -90,7 +88,7 @@ router.post('/create', async (req, res) => {
 });
 
 // 4. Update Medcne Detail
-router.put('/update/:id', async (req, res) => {
+/*router.put('/update/:id', async (req, res) => {
     const medicine_id = req.params.id;
     const data = [req.body.medicine_name, req.body.medicine_type,req.body.mfr, req.body.hsn_code,req.body.qty,req.body.Free_qty,req.body.batch_no,req.body.expiry_date,req.body.mrp_rate,req.body.ptr_rate,req.body.GST_percentage,req.body.amount,req.body.single_qty_price,req.body.purchase_date,req.body.in_stock_total,medicine_id];
     connection.query('UPDATE Medicine_Master SET medicine_name = ?, medicine_type = ?,mfr = ?, hsn_code=?,qty=?,Free_qty=?,batch_no=?,expiry_date=?,mrp_rate=?,ptr_rate=?,GST_percentage=?,amount=?,single_qty_price=?,purchase_date=?,in_stock_total=? WHERE medicine_id =? ', data, (err, results) => {
@@ -120,7 +118,7 @@ router.delete('/delete/:id', (req, res, next) => {
                
     
   })
-})
+})*/
 //----------------
 
 
