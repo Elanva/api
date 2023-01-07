@@ -88,10 +88,10 @@ router.post('/addprescriptionSecondary', async (req, res) => {
 });
 
 // 4. Update Medcne Detail
-/*router.put('/update/:id', async (req, res) => {
-    const medicine_id = req.params.id;
-    const data = [req.body.medicine_name, req.body.medicine_type,req.body.mfr, req.body.hsn_code,req.body.qty,req.body.Free_qty,req.body.batch_no,req.body.expiry_date,req.body.mrp_rate,req.body.ptr_rate,req.body.GST_percentage,req.body.amount,req.body.single_qty_price,req.body.purchase_date,req.body.in_stock_total,medicine_id];
-    connection.query('UPDATE Medicine_Master SET medicine_name = ?, medicine_type = ?,mfr = ?, hsn_code=?,qty=?,Free_qty=?,batch_no=?,expiry_date=?,mrp_rate=?,ptr_rate=?,GST_percentage=?,amount=?,single_qty_price=?,purchase_date=?,in_stock_total=? WHERE medicine_id =? ', data, (err, results) => {
+router.put('/update/:id', async (req, res) => {
+    const prscription_id = req.params.id;
+    const data = [req.body.medicine_id,req.body.medicine_name, req.body.medicine_type,req.body.no_of_days, req.body.quantity, req.body.befre_or_aftr_food,req.body.morning, req.body.afternoon,req.body.night,req.body.Patient_Id, prscription_id];
+    connection.query('UPDATE Prescription_Details SET medicine_id = ?, medicine_name = ?, medicine_type = ?,no_of_days=?, quantity=?, befre_or_aftr_food=?, morning=?, afternoon=?, night=?, Patient_Id=? WHERE prescrip_second_id =? ', data, (err, results) => {
         if (err) {
             res.sendStatus(500);
             return;
@@ -102,10 +102,11 @@ router.post('/addprescriptionSecondary', async (req, res) => {
     })
 
 });
-//5. Delete Doctor by Id
+//5. Delete Prescrption by Id
 router.delete('/delete/:id', (req, res, next) => {
-  const medicine_id = req.params.id;
-  connection.query('DELETE FROM Medicine_Master WHERE medicine_id = ?',medicine_id,(err,results)=>{
+  const prescription_id = req.params.id;
+  connection.query('DELETE FROM Prescription_Details WHERE prescrip_second_id = ?',prescription_id
+  ,(err,results)=>{
       if(err){
           throw err;
       }
@@ -118,7 +119,7 @@ router.delete('/delete/:id', (req, res, next) => {
                
     
   })
-})*/
+})
 //----------------
 
 
