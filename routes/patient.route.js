@@ -104,7 +104,7 @@ router.get('/patient', async (req, res) => {
             res.sendStatus(500);
             return;
         }
-        else if (results == 0) {
+        else if (results >= 0) {
             res.json({ "Data": "Data not Found", "Status": "false" })
         }
         else {

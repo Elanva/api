@@ -5,9 +5,9 @@ const connection = dbconfig.getConnection();
 
 //Medicine CRUD Operations
 
-//Prescription CRUD Operations 
-//Get Prrescription Details by Patient Id
-router.get('/getPrescriptionDetailById/:id', (req, res, next) => {
+//Pharrmacy CRUD Operations 
+//Get Pharrmacy Details by Patient Id
+router.get('/patientlist/', (req, res, next) => {
     const Patient_Id = req.params.id;
   
     connection.query("SELECT p.prescrip_second_id,p.Patient_Id,p.medicine_id,p.medicine_name,p.medicine_type,p.no_of_days,p.quantity,p.befre_or_aftr_food,p.morning,p.afternoon,p.night,m.medicine_name from Prescription_Details p, Medicine_Master m Where p.medicine_id=m.medicine_id and Patient_Id= ?",Patient_Id,(err, results, fields) => {
@@ -24,10 +24,9 @@ router.get('/getPrescriptionDetailById/:id', (req, res, next) => {
 
     });
 })
-//set status true or 1 to check whether prescripton Prmary data Saved or not
-router.get('/PrescriptionPrimarystatus/:id', (req, res, next) => {
-    const Patient_Id = req.params.id;
-    connection.query("select setstatus from Prescription_Primary Where Patient_Id= ?", Patient_Id,(err, results, fields) => {
+//single dataset from Pharrmacy details
+router.get('/getsinglePrescriptionById/:id', (req, res, next) => {
+    connection.query("select p.prescription_id,p.Patient_Id,p.medicine_id,p.medicine_type,p.no_of_days,p.quantity,p.befre_or_aftr_food,p.morning,p.afternoon,p.evening,m.medicine_name from Prescription_Details p, Medicine_Master m Where Patient_Id= ? and p.medicine_id=m.medicine_id", (err, results, fields) => {
         if (err) {
             res.sendStatus(500);
             return;
@@ -42,21 +41,23 @@ router.get('/PrescriptionPrimarystatus/:id', (req, res, next) => {
     });
 })
 
-//Update status "Waiting For Pharmacy" in Patients_Master Table once prescription added
-//need to work on prescription screen
-router.put('/updatestatus/:id', async (req, res) => {
-    const patient_id = req.params.id;
-    connection.query('update Patients_Master set Status="Waiting For Pharmacy" WHERE Patient_Id = ? AND Status = "Waiting For Doctor"', patient_id, (err, results) => {
+// get medicine name by Id
+/*router.get('/:id', async (req, res, next) => {
+    const medicine_id = req.params.id;
+    let sql = "SELECT * FROM Medicine_Master where medicine_id = (?)";
+    connection.query(sql, [medicine_id], (err, results) => {
         if (err) {
             res.sendStatus(500);
             return;
         }
-        else {
-            res.json({ "Data": "Record Updated Successfully", "Status": "true" });
+        else if (results == 0) {
+            res.json({ "Data": "Data not Found", "Status": "false" });
         }
-    })
-
-});
+        else {
+            res.json({ "Data": results[0], "Status": "true" });
+        }
+    });
+});*/
 
 //3.Add Doctors details
 router.post('/addprescriptionPrimary', async (req, res) => {
@@ -101,23 +102,24 @@ router.put('/update/:id', async (req, res) => {
     })
 
 });
-
+//5. Delete Prescrption by Id
 router.delete('/delete/:id', (req, res, next) => {
-    const medicine_id = req.params.id;
-    connection.query('DELETE FROM Prescription_Details WHERE prescrip_second_id = ?',medicine_id,(err,results)=>{
-        if(err){
-            throw err;
-        }
-        else if(results.affectedRows == 0){
-          res.json({ "Data": "Record not found", "Status": "false" });
-        }
-        else if(results.affectedRows == 1){
-          res.json({ "Data": "Record Deleted Successfully", "Status": "true" });
-        }
-                 
-      
-    })
+  const prescription_id = req.params.id;
+  connection.query('DELETE FROM Prescription_Details WHERE prescrip_second_id = ?',prescription_id
+  ,(err,results)=>{
+      if(err){
+          throw err;
+      }
+      else if(results.affectedRows == 0){
+        res.json({ "Data": "Record not found", "Status": "false" });
+      }
+      else if(results.affectedRows == 1){
+        res.json({ "Data": "Record Deleted Successfully", "Status": "true" });
+      }
+               
+    
   })
+})
 //----------------
 
 
