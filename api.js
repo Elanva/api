@@ -15,7 +15,7 @@ const Medicine = require('./routes/medicinetype.route');
 const PrescriptionRoute = require('./routes/prescription.route');
 const DoctorRoute = require('./routes/doctor.route');
 const NurseRoute = require('./routes/nurse.route');
-
+const PharmacyRoute = require('./routes/pharmacy.route');
 app.use('/api/doctors', DoctorRoute);
 app.use('/api/nurses', NurseRoute);
 app.use('/api/patients', PatientRoute);
@@ -23,6 +23,7 @@ app.use('/api/users', UserRoute);
 app.use('/api/medicine', MedicineRoute);
 app.use('/api/meditype', Medicine);
 app.use('/api/prescriptions', PrescriptionRoute);
+app.use('/api/pharmacy', PharmacyRoute);
 var port= process.env.API_PORT;
 
 app.listen(port, ()=>{console.log('Server running at' + port);});
