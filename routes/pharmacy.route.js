@@ -8,9 +8,7 @@ const connection = dbconfig.getConnection();
 //Pharrmacy CRUD Operations 
 //Get Pharrmacy Details by Patient Id
 router.get('/patientlist/', (req, res, next) => {
-    const Patient_Id = req.params.id;
-  
-    connection.query("SELECT p.prescrip_second_id,p.Patient_Id,p.medicine_id,p.medicine_name,p.medicine_type,p.no_of_days,p.quantity,p.befre_or_aftr_food,p.morning,p.afternoon,p.night,m.medicine_name from Prescription_Details p, Medicine_Master m Where p.medicine_id=m.medicine_id and Patient_Id= ?",Patient_Id,(err, results, fields) => {
+      connection.query("select First_Name,Patient_Id,Doctor_Id,Phone_No, Status from Patients_Master where Status='Waiting For Pharmacy'",(err, results, fields) => {
         if (err) {
             res.sendStatus(500);
             return;
@@ -20,6 +18,24 @@ router.get('/patientlist/', (req, res, next) => {
         }
         else {
             res.json({ "Data": results, "Status": "true" })
+        }
+
+    });
+})
+//Sarch name in Pharmacy List
+router.get('/patientlistbyid', async (req, res, next) => {
+    const First_Name = req.query.name;
+    let sql = `CALL PharmacylistSearch(?)`;
+    connection.query(sql, [First_Name], (err, results) => {
+        if (err) {
+            res.sendStatus(500);
+            return;
+        }
+        else if (results == 0) {
+            res.json({ "Data": "Data not Found", "Status": "false" })
+        }
+        else {
+            res.json({ "Data": results[0], "Status": "true" })
         }
 
     });
