@@ -114,9 +114,26 @@ router.get('/patient', async (req, res) => {
 })
 // Get Patient by Doctor Id
 
-router.get('/bydoctorId/:id', async (req, res) => {
+router.get('/outpatientbydoctorId/:id', async (req, res) => {
     const Doctor_Id = req.params.id;
-    let sql = "SELECT * FROM Patients_Master where Doctor_Id = (?)";
+    let sql = "SELECT * FROM Patients_Master where Doctor_Id = (?) and Patient_Type = 'Out Patient' ";
+    connection.query(sql, [Doctor_Id], (err, results) => {
+        if (err) {
+            res.sendStatus(500);
+            return;
+        }
+        else if (results == 0) {
+            res.json({ "Data": [{ }], "Status": "false" });
+        }
+        else {
+            res.json({ "Data": results, "Status": "true" });
+        }
+    })
+})
+
+router.get('/inpatientbydoctorId/:id', async (req, res) => {
+    const Doctor_Id = req.params.id;
+    let sql = "SELECT * FROM Patients_Master where Doctor_Id = (?) and Patient_Type = 'In Patient' ";
     connection.query(sql, [Doctor_Id], (err, results) => {
         if (err) {
             res.sendStatus(500);
