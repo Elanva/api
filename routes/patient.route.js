@@ -195,7 +195,20 @@ router.post('/outpatienthistory/create', async (req, res) => {
     })
 
 });
+//OutPatient History create/save Ap service
+router.post('/inpatienthistory/create', async (req, res) => {
+    const data = req.body;
+    connection.query('INSERT INTO InPatientHistory_Details SET ?', data, (err, results) => {
+        if (err) {
+            res.sendStatus(500);
+            return;
+        }
+        else {
+            res.json({ "Data": "Record " + results.insertId + " Inserted", "Status": "true" });
+        }
+    })
 
+});
 // 4. Update Patient Detail
 router.put('/update/:id', async (req, res) => {
     const Patient_Id = req.params.id;
