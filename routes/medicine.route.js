@@ -22,7 +22,7 @@ router.get('/', (req, res, next) => {
     });
 })
 router.get('/medicinename', (req, res, next) => {
-    connection.query("SELECT medicine_id,medicine_name,mrp_rate,ptr_rate,expiry_date,medicine_type,hsn_code,qty,in_stock_total from Medicine_Master", (err, results, fields) => {
+    connection.query("SELECT medicine_id,medicine_name,mrp_rate,ptr_rate,single_qty_price,GST_percentage,expiry_date,medicine_type,hsn_code,qty,in_stock_total from Medicine_Master", (err, results, fields) => {
         if (err) {
             res.sendStatus(500);
             return;

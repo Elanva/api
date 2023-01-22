@@ -7,7 +7,7 @@ const connection = dbconfig.getConnection();
 
 //Prescription CRUD Operations 
 //Get Prrescription Details by Patient Id
-router.get('/getPrescriptionDetailById/:id', (req, res, next) => {
+/*router.get('/getPrescriptionDetailById/:id', (req, res, next) => {
     const Patient_Id = req.params.id;
   
     connection.query("SELECT p.prescrip_second_id,p.Patient_Id,p.medicine_id,p.medicine_name,p.medicine_type,p.no_of_days,p.quantity,p.befre_or_aftr_food,p.morning,p.afternoon,p.night,m.medicine_name from Prescription_Details p, Medicine_Master m Where p.medicine_id=m.medicine_id and Patient_Id= ?",Patient_Id,(err, results, fields) => {
@@ -23,7 +23,7 @@ router.get('/getPrescriptionDetailById/:id', (req, res, next) => {
         }
 
     });
-})
+})*/
 //set status true or 1 to check whether prescripton Prmary data Saved or not
 router.get('/PrescriptionPrimarystatus/:id', (req, res, next) => {
     const Patient_Id = req.params.id;

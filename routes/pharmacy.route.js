@@ -60,7 +60,7 @@ router.get('/getsinglePrescriptionById/:id', (req, res, next) => {
 // get Prescrription Detail by Patient Id
 router.get('/getprescriptionbyid/:id', async (req, res, next) => {
     const patient_id = req.params.id;
-    let sql = "select Prescription_Details.Patient_Id,Prescription_Details.medicine_id,Prescription_Details.medicine_name,Prescription_Details.medicine_type,Prescription_Details.no_of_days,Prescription_Details.quantity,Prescription_Details.befre_or_aftr_food,Medicine_Master.single_qty_price,Medicine_Master.in_stock_total from Prescription_Details INNER JOIN Medicine_Master ON Prescription_Details.medicine_id=Medicine_Master.medicine_id where Prescription_Details.Patient_Id = (?)";
+    let sql = "select Prescription_Details.Patient_Id,Prescription_Details.medicine_id,Prescription_Details.medicine_name,Prescription_Details.medicine_type,Prescription_Details.no_of_days,Prescription_Details.quantity,Prescription_Details.befre_or_aftr_food,Medicine_Master.mrp_rate,Medicine_Master.GST_percentage,(Medicine_Master.mrp_rate + Medicine_Master.mrp_rate*Medicine_Master.GST_percentage/100) * (Prescription_Details.quantity)as totalamt,Medicine_Master.in_stock_total from Prescription_Details INNER JOIN Medicine_Master ON Prescription_Details.medicine_id=Medicine_Master.medicine_id where Prescription_Details.added_on = CURDATE() and Prescription_Details.status = 0 and Prescription_Details.Patient_Id = (?)";
     connection.query(sql, [patient_id], (err, results) => {
         if (err) {
             res.sendStatus(500);
@@ -108,6 +108,21 @@ router.put('/update/:id', async (req, res) => {
     const prscription_id = req.params.id;
     const data = [req.body.medicine_id,req.body.medicine_name, req.body.medicine_type,req.body.no_of_days, req.body.quantity, req.body.befre_or_aftr_food,req.body.morning, req.body.afternoon,req.body.night,req.body.Patient_Id, prscription_id];
     connection.query('UPDATE Prescription_Details SET medicine_id = ?, medicine_name = ?, medicine_type = ?,no_of_days=?, quantity=?, befre_or_aftr_food=?, morning=?, afternoon=?, night=?, Patient_Id=? WHERE prescrip_second_id =? ', data, (err, results) => {
+        if (err) {
+            res.sendStatus(500);
+            return;
+        }
+        else {
+            res.json({ "Data": "Record Updated Successfully", "Status": "true" });
+        }
+    })
+
+});
+router.put('/updatestock/:id', async (req, res) => {
+    const patientid = req.params.id;
+    const medicineid = req.query.medicineid;
+   // const data = [req.body.medicine_id,req.body.medicine_name, req.body.medicine_type,req.body.no_of_days, req.body.quantity, req.body.befre_or_aftr_food,req.body.morning, req.body.afternoon,req.body.night,req.body.Patient_Id, prscription_id];
+    connection.query('UPDATE Medicine_Master SET in_stock_total = in_stock_total - (SELECT quantity FROM Prescription_Details WHERE  Prescription_Details.Patient_Id = ? and Prescription_Details.medicine_id = ?) WHERE Medicine_Master.medicine_id = ?',[ patientid,medicineid,medicineid],(err, results) => {
         if (err) {
             res.sendStatus(500);
             return;
