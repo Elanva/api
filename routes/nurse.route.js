@@ -38,6 +38,40 @@ router.get('/search', async (req, res, next) => {
 
     });
 })
+//Advance History
+router.get('/advancehistory/:id', async (req, res, next) => {
+    const Nurse_Id = req.params.id;
+    let sql = "SELECT Nurse_Id,Salary,Nurse_Name,Advance_Amt,Date_Given FROM Advance_Master WHERE Nurse_Id = ? and MONTH(Date_Given) = MONTH(CURRENT_DATE()) and YEAR(Date_Given) = YEAR(CURRENT_DATE())";
+    connection.query(sql, [Nurse_Id], (err, results) => {
+        if (err) {
+            res.sendStatus(500);
+            return;
+        }
+        else if (results == 0) {
+            res.json({ "Data": [{ }], "Status": "false" });
+        }
+        else {
+            res.json({ "Data": results, "Status": "true" });
+        }
+    });
+});
+//Advance Total
+router.get('/advancetotal/:id', async (req, res, next) => {
+    const Nurse_Id = req.params.id;
+    let sql = "SELECT sum(Advance_Amt)as TotalAdvance,Salary FROM Advance_Master WHERE Nurse_Id= ? and MONTH(`Date_Given`) = MONTH(CURRENT_DATE())AND YEAR(`Date_Given`) = YEAR(CURRENT_DATE())";
+    connection.query(sql, [Nurse_Id], (err, results) => {
+        if (err) {
+            res.sendStatus(500);
+            return;
+        }
+        else if (results == 0) {
+            res.json({ "Data":{ }, "Status": "false" });
+        }
+        else {
+            res.json({ "Data": results[0], "Status": "true" });
+        }
+    });
+});
 // 2. Doctors name by Id
 router.get('/:id', async (req, res, next) => {
     const Nurse_Id = req.params.id;
@@ -71,6 +105,19 @@ router.post('/create', async (req, res) => {
 
 });
 
+router.post('/addadvance', async (req, res) => {
+    const data = req.body;
+    connection.query('INSERT INTO Advance_Master SET ?', data, (err, results) => {
+        if (err) {
+            res.sendStatus(500);
+            return;
+        }
+        else {
+            res.json({ "Data": "Record " + results.insertId + " Inserted", "Status": "true" });
+        }
+    })
+
+});
 // 4. Update Doctor Detail
 router.put('/update/:id', async (req, res) => {
     const nurseid = req.params.id;

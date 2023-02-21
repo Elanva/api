@@ -2,13 +2,12 @@ const express = require('express');
 const router = express.Router();
 const dbconfig = require('../dbconfig');
 const connection = dbconfig.getConnection();  
-//Doctors CRUD Operations
+//Users CRUD Operations
 // 1. Get All Users details
 router.get('/', (req, res, next) => {
     connection.query("SELECT * FROM User_Master", (err, results, fields) => {
         if (err) {
-            res.json({ "Data" :  res.sendStatus(500), "Status": "false" })
-            
+            res.json({ "Data" :  res.sendStatus(500), "Status": "false" })            
             return;
         }
         else if (results == 0) {
@@ -17,6 +16,24 @@ router.get('/', (req, res, next) => {
         else {
             res.json({ "Data": results, "Status": "true" })
         }     
+    });
+})
+//Users Searrch
+router.get('/search', async (req, res, next) => {
+    const User_Id = req.query.name;
+    let sql = `CALL UserSearch(?)`;
+    connection.query(sql, [User_Id], (err, results) => {
+        if (err) {
+            res.sendStatus(500);
+            return;
+        }
+        else if (results == 0) {
+            res.json({ "Data": "Data not Found", "Status": "false" })
+        }
+        else {
+            res.json({ "Data": results[0], "Status": "true" })
+        }
+
     });
 })
 // 2. Chck username and Password is correct or Not
@@ -31,7 +48,7 @@ router.post('/', (req, res) => {
             connection.end;
         }
         else {
-            res.json({ "Data": results, "Status": "true" })
+            res.json({ "Data": results[0], "Status": "true" })
         }
      
     });

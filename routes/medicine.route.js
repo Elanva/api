@@ -22,7 +22,7 @@ router.get('/', (req, res, next) => {
     });
 })
 router.get('/medicinename', (req, res, next) => {
-    connection.query("SELECT medicine_id,medicine_name,mrp_rate,ptr_rate,single_qty_price,GST_percentage,expiry_date,medicine_type,hsn_code,qty,in_stock_total from Medicine_Master", (err, results, fields) => {
+    connection.query("SELECT medicine_id,medicine_name,mrp_rate,GST_percentage,expiry_date,medicine_type,hsn_code,batch_no,in_stock_total,TIMESTAMPDIFF(day,now(3),expiry_date) AS expirydays from Medicine_Master ORDER BY medicine_name", (err, results, fields) => {
         if (err) {
             res.sendStatus(500);
             return;
@@ -92,8 +92,8 @@ router.post('/create', async (req, res) => {
 // 4. Update Medcne Detail
 router.put('/update/:id', async (req, res) => {
     const medicine_id = req.params.id;
-    const data = [req.body.medicine_name, req.body.medicine_type,req.body.mfr, req.body.hsn_code,req.body.qty,req.body.Free_qty,req.body.batch_no,req.body.expiry_date,req.body.mrp_rate,req.body.ptr_rate,req.body.GST_percentage,req.body.amount,req.body.single_qty_price,req.body.purchase_date,req.body.in_stock_total,medicine_id];
-    connection.query('UPDATE Medicine_Master SET medicine_name = ?, medicine_type = ?,mfr = ?, hsn_code=?,qty=?,Free_qty=?,batch_no=?,expiry_date=?,mrp_rate=?,ptr_rate=?,GST_percentage=?,amount=?,single_qty_price=?,purchase_date=?,in_stock_total=? WHERE medicine_id =? ', data, (err, results) => {
+    const data = [req.body.medicine_name, req.body.medicine_type,req.body.mfr, req.body.hsn_code,req.body.qty,req.body.Free_qty,req.body.batch_no,req.body.expiry_date,req.body.mrp_rate,req.body.ptr_rate,req.body.GST_percentage,req.body.amount,req.body.purchase_date,req.body.in_stock_total,medicine_id];
+    connection.query('UPDATE Medicine_Master SET medicine_name = ?, medicine_type = ?,mfr = ?, hsn_code=?,qty=?,Free_qty=?,batch_no=?,expiry_date=?,mrp_rate=?,ptr_rate=?,GST_percentage=?,amount=?,purchase_date=?,in_stock_total=? WHERE medicine_id =? ', data, (err, results) => {
         if (err) {
             res.sendStatus(500);
             return;

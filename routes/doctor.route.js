@@ -79,8 +79,9 @@ router.put('/update/:id', async (req, res) => {
     const data = [req.body.Doctor_Name,req.body.Doctor_Age,req.body.Date_Joining,req.body.Mobile,req.body.Address,req.body.Specialist,req.body.Salary,doctorid];
     connection.query('UPDATE Doctors_Master SET Doctor_Name = ?, Doctor_Age = ?,Date_Joining = ?, Mobile=?,Address=?,Specialist=?,Salary=? WHERE Doctor_Id =? ', data, (err, results) => {
         if (err) {
-            res.sendStatus(500);
-            return;
+           // res.sendStatus(500);
+           return;
+           
         }
         else {
             res.json({ "Data": "Record " + results.insertId + " Updated Successfully", "Status": "true" });
@@ -93,15 +94,14 @@ router.delete('/delete/:id', (req, res, next) => {
   const doctorid = req.params.id;
   connection.query('DELETE FROM Doctors_Master WHERE Doctor_Id = ?',doctorid,(err,results)=>{
       if(err){
-          throw err;
+        res.json({ "Data": "Data mapped with other Table", "Status": "false" });
       }
       else if(results.affectedRows == 0){
         res.json({ "Data": "Record not found", "Status": "false" });
       }
       else if(results.affectedRows == 1){
         res.json({ "Data": "Record Deleted Successfully", "Status": "true" });
-      }
-               
+      }           
     
   })
 })

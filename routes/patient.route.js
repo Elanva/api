@@ -6,7 +6,7 @@ const connection = dbconfig.getConnection();
 //Doctors CRUD Operations
 // 1. Get All Doctors details
 router.get('/', (req, res) => {
-    connection.query("SELECT * FROM Patients_Master", (err, results) => {
+    connection.query("SELECT * FROM Patients_Master where Active = 1", (err, results) => {
         if (err) {
             res.sendStatus(500);
             return;
@@ -23,7 +23,7 @@ router.get('/', (req, res) => {
 //Show Particular Patient data based on Patient Id
 router.get('/patientinfo/:id', (req, res) => {
     const Patient_Id = req.params.id;
-    let sql = "SELECT * FROM Patients_Master where Patient_Id = (?)";
+    let sql = "SELECT * FROM Patients_Master where Active = 1 and Patient_Id = (?)";
     connection.query(sql, [Patient_Id], (err, results) => {
         if (err) {
             res.sendStatus(500);
@@ -41,7 +41,7 @@ router.get('/patientinfo/:id', (req, res) => {
 router.get('/inpatienthistory/:id', (req, res) => {
    // .query("select * from InPatient_Details where Patient_Id = @input_parameter ");
    const Patient_Id = req.params.id;
-    let sql = "SELECT * FROM InPatientHistory_Details where Patient_Id = (?)";
+    let sql = "SELECT * FROM InPatientHistory_Details where and Active = 1 and Patient_Id = (?)";
     connection.query(sql, [Patient_Id], (err, results) => {
         if (err) {
             res.sendStatus(500);
@@ -116,7 +116,7 @@ router.get('/patient', async (req, res) => {
 
 router.get('/outpatientbydoctorId/:id', async (req, res) => {
     const Doctor_Id = req.params.id;
-    let sql = "SELECT * FROM Patients_Master where Doctor_Id = (?) and Patient_Type = 'Out Patient' ";
+    let sql = "SELECT * FROM Patients_Master where Doctor_Id = (?) and Patient_Type = 'Out Patient' and Active = 1 ";
     connection.query(sql, [Doctor_Id], (err, results) => {
         if (err) {
             res.sendStatus(500);
@@ -133,7 +133,7 @@ router.get('/outpatientbydoctorId/:id', async (req, res) => {
 
 router.get('/inpatientbydoctorId/:id', async (req, res) => {
     const Doctor_Id = req.params.id;
-    let sql = "SELECT * FROM Patients_Master where Doctor_Id = (?) and Patient_Type = 'In Patient' ";
+    let sql = "SELECT * FROM Patients_Master where Doctor_Id = (?) and Active = 1 and Patient_Type = 'In Patient' ";
     connection.query(sql, [Doctor_Id], (err, results) => {
         if (err) {
             res.sendStatus(500);
@@ -150,7 +150,7 @@ router.get('/inpatientbydoctorId/:id', async (req, res) => {
 // 2. Doctors name by Id
 router.get('/:id', async (req, res) => {
     const Patient_Id = req.params.id;
-    let sql = "SELECT * FROM Patients_Master where Doctor_Id = (?)";
+    let sql = "SELECT * FROM Patients_Master where Active = 1 and Doctor_Id = (?)";
     connection.query(sql, [Patient_Id], (err, results) => {
         if (err) {
             res.sendStatus(500);
@@ -227,7 +227,8 @@ router.put('/update/:id', async (req, res) => {
 //5. Delete Doctor by Id
 router.delete('/delete/:id', (req, res) => {
     const Patient_Id = req.params.id;
-    connection.query('DELETE FROM Patients_Master WHERE Patient_Id = ?', Patient_Id, (err, results) => {
+    connection.query('UPDATE Patients_Master SET Active = "0" WHERE Patient_Id = ?',Patient_Id, (err, results) => {
+    
         if (err) {
             throw err;
         }

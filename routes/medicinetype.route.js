@@ -5,7 +5,7 @@ const connection = dbconfig.getConnection();
 
 //Medicine CRUD Operations
 router.get('/stockdetail', async (req, res, next) => {
-    connection.query("SELECT medicine_id, medicine_name,medicine_type,in_stock_total,mfr,expiry_date,purchase_date,TIMESTAMPDIFF(day,now(3),expiry_date) AS expirydays from Medicine_Master", (err, results, fields) => {
+    connection.query("SELECT medicine_id, medicine_name,medicine_type,in_stock_total,batch_no,mfr,expiry_date,purchase_date,TIMESTAMPDIFF(day,now(3),expiry_date) AS expirydays from Medicine_Master", (err, results, fields) => {
       
         if (err) {
             res.sendStatus(500);
